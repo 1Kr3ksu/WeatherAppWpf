@@ -1,0 +1,82 @@
+﻿<ui:FluentWindow x:Class="WpfApp2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:WpfApp2"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d"
+             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+           Title="Aplikacja Pogodowa" Width="800" Height="600">
+        <Grid Margin="20 , 20 , 20 , 20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" VerticalAlignment="Top" Margin="0,0,20,0">
+            <TextBlock Text="Miasto" FontWeight="Bold"/>
+            <ComboBox x:Name="CityComboBox"
+                      IsEditable="True"
+                      IsTextSearchEnabled="False"
+                      Text="{Binding City, UpdateSourceTrigger=PropertyChanged}"
+                      Margin="0,5,0,10">
+            </ComboBox>
+            <TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="Red"
+                       TextWrapping="Wrap"
+                          Margin="0,0,0,10" />
+
+            <TextBlock Text="Data" FontWeight="Bold"/>
+            <TextBlock x:Name="DateTextBlock"
+                       Margin="0,5,0,10"
+                       Text="{Binding ApiDate}" />
+
+            <TextBlock Text="Godzina" FontWeight="Bold"/>
+            <TextBlock x:Name="TimeTextBlock"
+                       Margin="0,5,0,20"
+                       Text="{Binding ApiTime}" />
+
+            <Button x:Name="RefreshButton" Click="RefreshButton_Click" IsDefault="True" Content="Odśwież" Margin="0,5,0,5" />
+            <Button x:Name="SettingsButton" Content="Ustawienia" Margin="0,5,0,5" />
+        </StackPanel>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,0,0,10">
+                <Image x:Name="WeatherIcon" Width="96" Height="96" Margin="0,0,10,0" />
+                <StackPanel>
+                    <TextBlock Text="{Binding Weather.Current.Temp_C, StringFormat={}{0:0.#} °C, TargetNullValue=-- °C}" FontSize="36" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Weather.Current.Condition.Text, TargetNullValue=--}" FontSize="16" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Text="Wilgotność" FontWeight="Bold"/>
+                    <TextBlock x:Name="HumidityTextBlock" Text="{Binding Weather.Current.Humidity, StringFormat={}{0} %, TargetNullValue=-- %}" />
+                </StackPanel>
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Text="Wiatr" FontWeight="Bold"/>
+                    <TextBlock x:Name="WindTextBlock" Text="{Binding Weather.Current.Wind_Kph, StringFormat={}{0:0.#} km/h, TargetNullValue=-- km/h}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Ciśnienie" FontWeight="Bold"/>
+                    <TextBlock x:Name="PressureTextBlock" Text="{Binding Weather.Current.Pressure_Mb, StringFormat={}{0:0.#} hPa, TargetNullValue=-- hPa}" />
+                </StackPanel>
+            </StackPanel>
+
+            <GroupBox Header="Prognoza" Grid.Row="2">
+                <ListBox x:Name="ForecastListBox">
+                    <ListBoxItem>Poniedziałek — 12 °C / 6 °C — pochmurnie</ListBoxItem>
+                    <ListBoxItem>Wtorek — 15 °C / 7 °C — deszcz</ListBoxItem>
+                    <ListBoxItem>Środa — 18 °C / 9 °C — słonecznie</ListBoxItem>
+                </ListBox>
+            </GroupBox>
+        </Grid>
+
+    </Grid>
+</ui:FluentWindow>
+
