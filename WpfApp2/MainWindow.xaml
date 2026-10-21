@@ -7,8 +7,17 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              mc:Ignorable="d"
              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-           Title="Aplikacja Pogodowa" Width="800" Height="600">
-        <Grid Margin="20 , 20 , 20 , 20">
+           Title="Aplikacja Pogodowa" Width="800" Height="600"
+           ExtendsContentIntoTitleBar="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Title="Aplikacja Pogodowa" />
+
+        <Grid Grid.Row="1" Margin="20 , 20 , 20 , 20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250" />
             <ColumnDefinition Width="*" />
@@ -77,6 +86,7 @@
             </GroupBox>
         </Grid>
 
+        </Grid>
     </Grid>
 </ui:FluentWindow>
 
