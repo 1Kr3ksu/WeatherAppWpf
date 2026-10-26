@@ -12,6 +12,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -48,43 +49,143 @@
             <Button x:Name="RefreshButton" Click="RefreshButton_Click" IsDefault="True" Content="Odśwież" Margin="0,5,0,5" />
             <Button x:Name="SettingsButton" Content="Ustawienia" Margin="0,5,0,5" />
         </StackPanel>
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,0,0,10">
-                <Image x:Name="WeatherIcon" Width="96" Height="96" Margin="0,0,10,0" />
-                <StackPanel>
-                    <TextBlock Text="{Binding Weather.Current.Temp_C, StringFormat={}{0:0.#} °C, TargetNullValue=-- °C}" FontSize="36" FontWeight="Bold" />
-                    <TextBlock Text="{Binding Weather.Current.Condition.Text, TargetNullValue=--}" FontSize="16" />
-                </StackPanel>
-            </StackPanel>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <!-- Aktualna pogoda -->
+                    <RowDefinition Height="Auto" />
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
-                <StackPanel Margin="0,0,20,0">
-                    <TextBlock Text="Wilgotność" FontWeight="Bold"/>
-                    <TextBlock x:Name="HumidityTextBlock" Text="{Binding Weather.Current.Humidity, StringFormat={}{0} %, TargetNullValue=-- %}" />
-                </StackPanel>
-                <StackPanel Margin="0,0,20,0">
-                    <TextBlock Text="Wiatr" FontWeight="Bold"/>
-                    <TextBlock x:Name="WindTextBlock" Text="{Binding Weather.Current.Wind_Kph, StringFormat={}{0:0.#} km/h, TargetNullValue=-- km/h}" />
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock Text="Ciśnienie" FontWeight="Bold"/>
-                    <TextBlock x:Name="PressureTextBlock" Text="{Binding Weather.Current.Pressure_Mb, StringFormat={}{0:0.#} hPa, TargetNullValue=-- hPa}" />
-                </StackPanel>
-            </StackPanel>
+                    <!-- Wilgotność, wiatr, ciśnienie -->
+                    <RowDefinition Height="Auto" />
 
-            <GroupBox Header="Prognoza" Grid.Row="2">
-                <ListBox x:Name="ForecastListBox">
-                    <ListBoxItem>Poniedziałek — 12 °C / 6 °C — pochmurnie</ListBoxItem>
-                    <ListBoxItem>Wtorek — 15 °C / 7 °C — deszcz</ListBoxItem>
-                    <ListBoxItem>Środa — 18 °C / 9 °C — słonecznie</ListBoxItem>
+                    <!-- Prognoza na 7 dni -->
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- AKTUALNA POGODA -->
+                <StackPanel Grid.Row="0"
+                Orientation="Horizontal"
+                VerticalAlignment="Top"
+                Margin="0,0,0,12">
+
+                    <Image x:Name="WeatherIcon"
+               Width="80"
+               Height="80"
+               Margin="0,0,12,0" />
+
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock
+                Text="{Binding Weather.Current.Temp_C,
+                       StringFormat={}{0:0.#} °C,
+                       TargetNullValue=-- °C}"
+                FontSize="36"
+                FontWeight="Bold" />
+
+                        <TextBlock
+                Text="{Binding Weather.Current.Condition.Text,
+                       TargetNullValue=--}"
+                FontSize="16"
+                TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- PARAMETRY AKTUALNEJ POGODY -->
+                <Grid Grid.Row="1" Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                        <TextBlock Text="Wilgotność"
+                       FontWeight="Bold" />
+
+                        <TextBlock
+                Text="{Binding Weather.Current.Humidity,
+                       StringFormat={}{0} %,
+                       TargetNullValue=-- %}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                        <TextBlock Text="Wiatr"
+                       FontWeight="Bold" />
+
+                        <TextBlock
+                Text="{Binding Weather.Current.Wind_Kph,
+                       StringFormat={}{0:0.#} km/h,
+                       TargetNullValue=-- km/h}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Ciśnienie"
+                       FontWeight="Bold" />
+
+                        <TextBlock
+                Text="{Binding Weather.Current.Pressure_Mb,
+                       StringFormat={}{0:0.#} hPa,
+                       TargetNullValue=-- hPa}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- PROGNOZA NA 7 DNI -->
+                <ListBox x:Name="ForecastListBox"
+             Grid.Row="2"
+             ItemsSource="{Binding Forecast}"
+             BorderThickness="0"
+             Padding="0"
+             ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="8"
+                        Margin="0,3"
+                        CornerRadius="8"
+                        BorderBrush="#33000000"
+                        BorderThickness="0,0,0,1">
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="40" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding DayName}"
+                                       FontWeight="SemiBold" />
+
+                                        <TextBlock Text="{Binding DateText}"
+                                       Opacity="0.7" />
+
+                                        <TextBlock Text="{Binding Condition}"
+                                       TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <Image Grid.Column="1"
+                               Width="36"
+                               Height="36"
+                               VerticalAlignment="Center"
+                               Source="{Binding Icon}" />
+
+                                    <StackPanel Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Margin="8,0,0,0">
+
+                                        <TextBlock
+                                Text="{Binding TemperatureText}"
+                                FontWeight="SemiBold" />
+
+                                        <TextBlock
+                                Text="{Binding ChanceOfRain,
+                                       StringFormat={}{0}% opadów}"
+                                FontSize="11" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
-            </GroupBox>
-        </Grid>
+            </Grid>
 
         </Grid>
     </Grid>

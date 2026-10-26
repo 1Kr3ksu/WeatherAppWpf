@@ -1,14 +1,20 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using WpfApp2.Models;
 using WpfApp2.Services;
+
 namespace WpfApp2.ViewModels;
 
 public sealed class MainViewModel : INotifyPropertyChanged
 {
     private readonly WeatherApiService _weatherApiService;
+
     private string _city = string.Empty;
     private WeatherResponse? _weather;
     private bool _isLoading;
@@ -17,8 +23,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public MainViewModel(WeatherApiService weatherApiService)
     {
         _weatherApiService = weatherApiService;
-
     }
+
     public string City
     {
         get => _city;
@@ -31,18 +37,18 @@ public sealed class MainViewModel : INotifyPropertyChanged
         set
         {
             if (!SetProperty(ref _weather, value))
-            {
                 return;
-            }
 
             OnPropertyChanged(nameof(ApiDate));
             OnPropertyChanged(nameof(ApiTime));
         }
     }
 
-    public string ApiDate => GetApiDate("dddd, d MMMM yyyy");
+    public string ApiDate =>
+        GetApiDate("dddd, d MMMM yyyy");
 
-    public string ApiTime => GetApiDate("HH:mm:ss");
+    public string ApiTime =>
+        GetApiDate("HH:mm:ss");
 
     public bool IsLoading
     {
@@ -55,6 +61,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
         get => _errorMessage;
         set => SetProperty(ref _errorMessage, value);
     }
+
+    public ObservableCollection<ForecastDay> Forecast { get; } = new();
+
     public async Task LoadWeatherAsync()
     {
         ErrorMessage = string.Empty;
@@ -66,30 +75,70 @@ public sealed class MainViewModel : INotifyPropertyChanged
         }
 
         IsLoading = true;
-        Weather = null;
 
         try
         {
-            Weather = await _weatherApiService.GetCurrentWeatherAsync(City);
+            // Pobierz aktualną pogodę.
+            Weather = await _weatherApiService
+                .GetCurrentWeatherAsync(City);
+
+            // Pobierz prognozę na 3 dni.
+            try
+            {
+                await LoadForecastAsync();
+            }
+            catch (HttpRequestException)
+            {
+                ErrorMessage =
+                    "Pobrano aktualną pogodę, ale nie udało się pobrać prognozy.";
+            }
+            catch (InvalidOperationException)
+            {
+                ErrorMessage =
+                    "Pobrano aktualną pogodę, ale dane prognozy są nieprawidłowe.";
+            }
         }
         catch (HttpRequestException)
         {
-            ErrorMessage = "Nie znaleziono miasta lub wystąpił problem z połączeniem.";
+            Weather = null;
+            Forecast.Clear();
+
+            ErrorMessage =
+                "Nie znaleziono miasta lub wystąpił problem z połączeniem.";
         }
         catch (InvalidOperationException)
         {
-            ErrorMessage = "Nie udało się odczytać danych pogodowych.";
+            Weather = null;
+            Forecast.Clear();
+
+            ErrorMessage =
+                "Nie udało się odczytać danych pogodowych.";
         }
         finally
         {
             IsLoading = false;
         }
     }
+
+    private async Task LoadForecastAsync()
+    {
+        var days = await _weatherApiService.GetForecastAsync(City);
+
+        Forecast.Clear();
+
+        foreach (var day in days)
+            Forecast.Add(day);
+
+        ErrorMessage = $"Pobrano dni prognozy: {Forecast.Count}";
+    
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private string GetApiDate(string format)
     {
-        if (Weather is null || !DateTime.TryParse(
+        if (Weather is null ||
+            !DateTime.TryParse(
                 Weather.Location.Localtime,
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
@@ -98,23 +147,30 @@ public sealed class MainViewModel : INotifyPropertyChanged
             return "--";
         }
 
-        return localTime.ToString(format, CultureInfo.CurrentCulture);
+        return localTime.ToString(
+            format,
+            CultureInfo.CurrentCulture);
     }
 
-    private bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private bool SetProperty<T>(
+        ref T field,
+        T value,
+        [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value))
-        {
             return false;
-        }
 
         field = value;
         OnPropertyChanged(propertyName);
+
         return true;
     }
 
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged(
+        [CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        PropertyChanged?.Invoke(
+            this,
+            new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -1,3 +1,4 @@
+
 namespace WpfApp2.Models;
 
 public sealed class CurrentWeather
