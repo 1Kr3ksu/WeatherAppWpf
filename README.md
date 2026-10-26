@@ -70,6 +70,6 @@ Dzięki temu korzystanie z aplikacji nie będzie wymagało instalowania Visual S
 
 Gotowa wersja będzie dostępna w sekcji [Releases](https://github.com/1Kr3ksu/WeatherAppWpf/releases) repozytorium GitHub.
 
-### 1. Pobranie projektu
-w przyszłości
+### 1. Pobranie projektu - w przyszłości
+
 Do uruchomienia aplikacji wymagany będzie system Windows oraz połączenie z internetem, niezbędne do pobierania aktualnych danych pogodowych.
