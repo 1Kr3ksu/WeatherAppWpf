@@ -129,7 +129,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         foreach (var day in days)
             Forecast.Add(day);
 
-        ErrorMessage = $"Pobrano dni prognozy: {Forecast.Count}";
+       
     
     }
 
