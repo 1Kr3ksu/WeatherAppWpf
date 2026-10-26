@@ -18,6 +18,9 @@ Aplikacja okienkowa umożliwiająca sprawdzanie aktualnej pogody oraz prognozy n
 - Odświeżanie danych pogodowych.
 - Obsługa błędów połączenia i pobierania danych.
 
+## Działanie aplikacji
+- Wpisz nazwę miasta
+- Po wpisaniu nazwy miasta kliknij przycisk Odśwież
 ## Technologie
 
 - **C#**
