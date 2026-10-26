@@ -1,46 +1,75 @@
-🌦️ WeatherAppWPF
+# WeatherAppWPF
 
-Aplikacja okienkowa umożliwiająca sprawdzanie aktualnej pogody oraz prognozy pogody na 3 dni dla miast z całego świata. Aplikacja pobiera dane z zewnętrznego API pogodowego i prezentuje je w przejrzystym, nowoczesnym interfejsie graficznym.
+Aplikacja okienkowa umożliwiająca sprawdzanie aktualnej pogody oraz prognozy na 3 dni dla miast z całego świata.
 
-📸 Zrzuty ekranu aplikacji
-Aktualna pogoda
+## Funkcje aplikacji
 
-!Aktualna pogoda w aplikacji
+- Wyszukiwanie miast z całego świata.
+- Wyświetlanie aktualnej temperatury.
+- Opis aktualnych warunków pogodowych.
+- Informacje o wilgotności powietrza.
+- Prędkość wiatru.
+- Ciśnienie atmosferyczne.
+- Prognoza pogody na 3 dni.
+- Prawdopodobieństwo opadów.
+- Prognozowane temperatury minimalne i maksymalne.
+- Ikony pogodowe.
+- Lokalna data i godzina wybranego miasta.
+- Odświeżanie danych pogodowych.
+- Obsługa błędów połączenia i pobierania danych.
 
-Prognoza pogody
+## Technologie
 
-!Prognoza pogody na 3 dni
+- **C#**
+- **.NET**
+- **WPF (Windows Presentation Foundation)**
+- **WPF UI**
+- **WeatherAPI**
+- **HttpClient**
+- **System.Text.Json**
+- **MVVM**
 
-Wyszukiwanie miasta
+## Architektura projektu
 
-!Wyszukiwanie miasta
+### Models
 
-✨ Funkcje aplikacji
-🌍 Wyszukiwanie miast z całego świata.
-🌡️ Wyświetlanie aktualnej temperatury.
-🌤️ Prezentowanie aktualnych warunków pogodowych.
-💧 Informacje o wilgotności powietrza.
-💨 Informacje o prędkości wiatru.
-🌡️ Wyświetlanie ciśnienia atmosferycznego.
-📅 Prognoza pogody na 3 dni.
-🌧️ Informacje o prawdopodobieństwie opadów.
-🌡️ Prognozowane temperatury minimalne i maksymalne.
-🖼️ Ikony przedstawiające warunki pogodowe.
-🕒 Wyświetlanie lokalnej daty i godziny dla wybranego miasta.
-🔄 Odświeżanie danych pogodowych.
-⚠️ Obsługa błędów połączenia i pobierania danych.
-🎨 Nowoczesny interfejs graficzny oparty na WPF UI.
-🖥️ Główne widoki
-Wyszukiwanie i wybór miasta.
-Aktualna pogoda.
-Szczegółowe informacje meteorologiczne.
-Prognoza pogody na kolejne dni.
-Komunikaty o błędach i problemach z pobieraniem danych.
-🌦️ Prezentowane dane pogodowe
+Modele przechowujące dane pogodowe, informacje o lokalizacji oraz prognozę na kolejne dni.
 
-Dla wybranego miasta aplikacja może wyświetlać:
+### Services
 
-Nazwę miasta i kraju.
-Aktualną temperaturę.
-Temperaturę odczuwalną.
-Opis aktualnych
+Warstwa odpowiedzialna za komunikację z WeatherAPI i pobieranie danych pogodowych.
+
+### ViewModels
+
+Warstwa zarządzająca danymi aplikacji i komunikacją pomiędzy logiką a interfejsem użytkownika.
+
+### Views
+
+Interfejs graficzny utworzony w XAML, umożliwiający wybór miasta oraz wyświetlanie danych pogodowych.
+
+## Uruchomienie projektu
+
+## Wymagania
+
+### Obecnie
+
+Aby uruchomić aplikację z kodu źródłowego, potrzebujesz:
+
+- Systemu Windows 10 lub Windows 11.
+- Visual Studio 2022 lub nowszego.
+- Zainstalowanego składnika **.NET Desktop Development** w Visual Studio.
+- Wersji .NET wymaganej przez projekt.
+- Klucza API z serwisu [WeatherAPI.com](https://www.weatherapi.com/).
+- Połączenia z internetem.
+
+### W przyszłości
+
+W niedalekiej przyszłości planowane jest udostępnienie gotowej wersji aplikacji w formacie ZIP lub jako plik wykonywalny `.exe`.
+
+Dzięki temu korzystanie z aplikacji nie będzie wymagało instalowania Visual Studio ani samodzielnego kompilowania kodu.
+
+Gotowa wersja będzie dostępna w sekcji [Releases](https://github.com/1Kr3ksu/WeatherAppWpf/releases) repozytorium GitHub.
+
+### 1. Pobranie projektu
+w przyszłości
+Do uruchomienia aplikacji wymagany będzie system Windows oraz połączenie z internetem, niezbędne do pobierania aktualnych danych pogodowych.
