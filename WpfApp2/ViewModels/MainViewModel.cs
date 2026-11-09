@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using WpfApp2.Models;
 using WpfApp2.Services;
 
@@ -14,15 +15,34 @@ namespace WpfApp2.ViewModels;
 public sealed class MainViewModel : INotifyPropertyChanged
 {
     private readonly WeatherApiService _weatherApiService;
+    private readonly DispatcherTimer _clockTimer;
 
     private string _city = string.Empty;
     private WeatherResponse? _weather;
     private bool _isLoading;
     private string _errorMessage = string.Empty;
+    private DateTime? _lastLoadedAt;
 
     public MainViewModel(WeatherApiService weatherApiService)
     {
         _weatherApiService = weatherApiService;
+
+        // Zegar aktualizuje się co 30 sekund
+        _clockTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(30)
+        };
+
+        _clockTimer.Tick += (sender, e) =>
+        {
+            if (HasLoadedWeather)
+            {
+                OnPropertyChanged(nameof(ApiTime));
+                OnPropertyChanged(nameof(ApiDate));
+            }
+        };
+
+        _clockTimer.Start();
     }
 
     public string City
@@ -41,20 +61,59 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
             OnPropertyChanged(nameof(ApiDate));
             OnPropertyChanged(nameof(ApiTime));
+            OnPropertyChanged(nameof(HasLoadedWeather));
         }
     }
 
-    public string ApiDate =>
-        GetApiDate("dddd, d MMMM yyyy");
+    // Informacja, czy pogoda została już pobrana
+    public bool HasLoadedWeather => Weather != null;
 
+    // Data widoczna dopiero po pobraniu pogody
+    public string ApiDate =>
+        HasLoadedWeather
+            ? DateTime.Now.ToString(
+                "dddd, d MMMM yyyy",
+                CultureInfo.CurrentCulture)
+            : string.Empty;
+
+    // Godzina widoczna dopiero po pobraniu pogody
     public string ApiTime =>
-        GetApiDate("HH:mm:ss");
+        HasLoadedWeather
+            ? DateTime.Now.ToString(
+                "HH:mm:ss",
+                CultureInfo.CurrentCulture)
+            : string.Empty;
 
     public bool IsLoading
     {
         get => _isLoading;
-        set => SetProperty(ref _isLoading, value);
+        set
+        {
+            if (!SetProperty(ref _isLoading, value))
+                return;
+
+            OnPropertyChanged(nameof(LoadStatus));
+        }
     }
+
+    public DateTime? LastLoadedAt
+    {
+        get => _lastLoadedAt;
+        private set
+        {
+            if (!SetProperty(ref _lastLoadedAt, value))
+                return;
+
+            OnPropertyChanged(nameof(LoadStatus));
+        }
+    }
+
+    // Godzina ostatniego udanego pobrania
+    public string LoadStatus => IsLoading
+        ? "Ładowanie"
+        : LastLoadedAt is DateTime loadedAt
+            ? $"Pobrano o {loadedAt:HH:mm:ss}"
+            : string.Empty;
 
     public string ErrorMessage
     {
@@ -78,11 +137,19 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
         try
         {
-            // Pobierz aktualną pogodę.
-            Weather = await _weatherApiService
+            // Opóźnienie ładowania 2 sekundy
+            await Task.Delay(TimeSpan.FromSeconds(2));
+
+            // Pobieranie aktualnej pogody
+            var weather = await _weatherApiService
                 .GetCurrentWeatherAsync(City);
 
-            // Pobierz prognozę na 3 dni.
+            Weather = weather;
+
+            // Zapis rzeczywistego momentu pobrania
+            LastLoadedAt = DateTime.Now;
+
+            // Pobieranie prognozy na 3 dni
             try
             {
                 await LoadForecastAsync();
@@ -100,17 +167,11 @@ public sealed class MainViewModel : INotifyPropertyChanged
         }
         catch (HttpRequestException)
         {
-            Weather = null;
-            Forecast.Clear();
-
             ErrorMessage =
                 "Nie znaleziono miasta lub wystąpił problem z połączeniem.";
         }
         catch (InvalidOperationException)
         {
-            Weather = null;
-            Forecast.Clear();
-
             ErrorMessage =
                 "Nie udało się odczytać danych pogodowych.";
         }
@@ -127,30 +188,12 @@ public sealed class MainViewModel : INotifyPropertyChanged
         Forecast.Clear();
 
         foreach (var day in days)
+        {
             Forecast.Add(day);
-
-       
-    
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    private string GetApiDate(string format)
-    {
-        if (Weather is null ||
-            !DateTime.TryParse(
-                Weather.Location.Localtime,
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out var localTime))
-        {
-            return "--";
-        }
-
-        return localTime.ToString(
-            format,
-            CultureInfo.CurrentCulture);
-    }
 
     private bool SetProperty<T>(
         ref T field,
