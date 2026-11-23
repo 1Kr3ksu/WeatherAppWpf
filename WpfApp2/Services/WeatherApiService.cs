@@ -49,10 +49,19 @@ public sealed class WeatherApiService
                 $"WeatherAPI zwróciło błąd {(int)response.StatusCode}: {json}");
         }
 
-        return JsonSerializer.Deserialize<WeatherResponse>(
-                   json, JsonOptions)
+        var weather = JsonSerializer.Deserialize<WeatherResponse>(
+                   json,
+                   JsonOptions)
                ?? throw new InvalidOperationException(
                    "WeatherAPI zwróciło niepoprawną odpowiedź.");
+
+        if (weather.Current.Condition.Icon.StartsWith("//"))
+        {
+            weather.Current.Condition.Icon =
+                "https:" + weather.Current.Condition.Icon;
+        }
+
+        return weather;
     }
 
     public async Task<List<ForecastDay>> GetForecastAsync(

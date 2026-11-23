@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using WpfApp2.Models;
 using WpfApp2.Services;
+using System.Text.Json;
 
 namespace WpfApp2.ViewModels;
 
@@ -146,10 +147,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
             Weather = weather;
 
-            // Zapis rzeczywistego momentu pobrania
             LastLoadedAt = DateTime.Now;
 
-            // Pobieranie prognozy na 3 dni
             try
             {
                 await LoadForecastAsync();
@@ -167,13 +166,15 @@ public sealed class MainViewModel : INotifyPropertyChanged
         }
         catch (HttpRequestException)
         {
-            ErrorMessage =
-                "Nie znaleziono miasta lub wystąpił problem z połączeniem.";
+            ErrorMessage = "Nie udało się pobrać pogody";
         }
         catch (InvalidOperationException)
         {
-            ErrorMessage =
-                "Nie udało się odczytać danych pogodowych.";
+            ErrorMessage = "Nie udało się pobrać pogody";
+        }
+        catch (JsonException)
+        {
+            ErrorMessage = "Nie udało się pobrać pogody";
         }
         finally
         {

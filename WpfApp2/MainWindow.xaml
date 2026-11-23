@@ -3,12 +3,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:WpfApp2"
-             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-             mc:Ignorable="d"
-             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-           Title="Aplikacja Pogodowa" Width="800" Height="600"
-           ExtendsContentIntoTitleBar="True">
+        xmlns:local="clr-namespace:WpfApp2"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        mc:Ignorable="d"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        Title="Aplikacja Pogodowa"
+        Width="800"
+        Height="600"
+        ExtendsContentIntoTitleBar="True">
+
+    <ui:FluentWindow.Resources>
+        <local:TemperatureToBrushConverter
+            x:Key="TemperatureToBrushConverter" />
+    </ui:FluentWindow.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -18,135 +26,213 @@
 
         <ui:TitleBar Title="Aplikacja Pogodowa" />
 
-        <Grid Grid.Row="1" Margin="20 , 20 , 20 , 20">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" VerticalAlignment="Top" Margin="0,0,20,0">
-            <TextBlock Text="Miasto" FontWeight="Bold"/>
-            <ComboBox x:Name="CityComboBox"
-                      IsEditable="True"
-                      IsTextSearchEnabled="False"
-                      Text="{Binding City, UpdateSourceTrigger=PropertyChanged}"
-                      Margin="0,5,0,10">
-            </ComboBox>
-            <TextBlock Text="{Binding ErrorMessage}"
-                       Foreground="Red"
-                       TextWrapping="Wrap"
-                          Margin="0,0,0,10" />
+        <Grid Grid.Row="1"
+              Margin="20">
 
-            <TextBlock Text="Data" FontWeight="Bold"/>
-            <TextBlock x:Name="DateTextBlock"
-                       Margin="0,5,0,10"
-                        Text="{Binding ApiDate}">
-                 <TextBlock.Style>
-                     <Style TargetType="TextBlock">
-                         <Setter Property="Text" Value="{Binding ApiDate}" />
-                         <Style.Triggers>
-                             <DataTrigger Binding="{Binding IsLoading}" Value="True">
-                                 <Setter Property="Text" Value="Ładowanie" />
-                             </DataTrigger>
-                         </Style.Triggers>
-                     </Style>
-                 </TextBlock.Style>
-             </TextBlock>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Godzina" FontWeight="Bold"/>
-            <TextBlock x:Name="TimeTextBlock"
-                       Margin="0,5,0,20"
-                        Text="{Binding ApiTime}">
-                 <TextBlock.Style>
-                     <Style TargetType="TextBlock">
-                         <Setter Property="Text" Value="{Binding ApiTime}" />
-                         <Style.Triggers>
-                             <DataTrigger Binding="{Binding IsLoading}" Value="True">
-                                 <Setter Property="Text" Value="Ładowanie" />
-                             </DataTrigger>
-                         </Style.Triggers>
-                     </Style>
-                 </TextBlock.Style>
-             </TextBlock>
+            <!-- LEWY PANEL -->
+            <StackPanel Grid.Column="0"
+                        VerticalAlignment="Top"
+                        Margin="0,0,20,0">
 
-            <Button x:Name="RefreshButton" Click="RefreshButton_Click" IsDefault="True" Content="Odśwież" Margin="0,5,0,5" />
-            <Button x:Name="SettingsButton" Content="Ustawienia" Margin="0,5,0,5" />
-        </StackPanel>
+                <TextBlock Text="Miasto"
+                           FontWeight="Bold" />
+
+                <ComboBox x:Name="CityComboBox"
+                          IsEditable="True"
+                          IsTextSearchEnabled="False"
+                          Text="{Binding City,
+                                         UpdateSourceTrigger=PropertyChanged}"
+                          Margin="0,5,0,10" />
+
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="Red"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,10" />
+
+                <TextBlock Text="Data"
+                           FontWeight="Bold" />
+
+                <TextBlock x:Name="DateTextBlock"
+                           Margin="0,5,0,10"
+                           Text="{Binding ApiDate}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text"
+                                    Value="{Binding ApiDate}" />
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoading}"
+                                             Value="True">
+                                    <Setter Property="Text"
+                                            Value="Ładowanie" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <TextBlock Text="Godzina"
+                           FontWeight="Bold" />
+
+                <TextBlock x:Name="TimeTextBlock"
+                           Margin="0,5,0,20"
+                           Text="{Binding ApiTime}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text"
+                                    Value="{Binding ApiTime}" />
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoading}"
+                                             Value="True">
+                                    <Setter Property="Text"
+                                            Value="Ładowanie" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <Button x:Name="RefreshButton"
+                        Click="RefreshButton_Click"
+                        IsDefault="True"
+                        Content="Odśwież"
+                        Margin="0,5,0,5" />
+
+                <Button x:Name="SettingsButton"
+                        Content="Ustawienia"
+                        Margin="0,5,0,5" />
+            </StackPanel>
+
+            <!-- PRAWY PANEL -->
             <Grid Grid.Column="1">
+
                 <Grid.RowDefinitions>
-                    <!-- Aktualna pogoda -->
                     <RowDefinition Height="Auto" />
-
-                    <!-- Wilgotność, wiatr, ciśnienie -->
                     <RowDefinition Height="Auto" />
-
-                    <!-- Prognoza na 7 dni -->
                     <RowDefinition Height="*" />
-
-                    <!-- Status pobierania -->
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <!-- AKTUALNA POGODA -->
-                <StackPanel Grid.Row="0"
-                Orientation="Horizontal"
-                VerticalAlignment="Top"
-                Margin="0,0,0,12">
+                <Border Grid.Row="0"
+        Padding="12"
+        CornerRadius="10"
+        Margin="0,0,0,12"
+        TextElement.Foreground="#1F2937"
+        Background="{Binding Weather.Current.Temp_C,
+                             Converter={StaticResource TemperatureToBrushConverter}}">
 
-                    <Image x:Name="WeatherIcon"
-               Width="80"
-               Height="80"
-               Margin="0,0,12,0" />
+                    <StackPanel Orientation="Horizontal"
+                VerticalAlignment="Top">
 
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock FontSize="36"
-                                   FontWeight="Bold">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="{Binding Weather.Current.Temp_C, StringFormat={}{0:0.#} °C, TargetNullValue=-- °C}" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
-                                            <Setter Property="Text" Value="Ładowanie" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                        <Image x:Name="WeatherIcon"
+       Width="80"
+       Height="80"
+       Margin="0,0,12,0"
+       Source="{Binding Weather.Current.Condition.Icon}" />
 
-                        <TextBlock FontSize="16"
-                                   TextWrapping="Wrap">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="{Binding Weather.Current.Condition.Text, TargetNullValue=--}" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
-                                            <Setter Property="Text" Value="Ładowanie" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                        <StackPanel VerticalAlignment="Center">
+
+                            <!-- NAZWA MIASTA -->
+                            <TextBlock x:Name="CityNameTextBlock"
+                                       FontSize="20"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding Weather.Location.Name,
+                                                      TargetNullValue=--}" />
+
+                            <!-- TEMPERATURA -->
+                            <TextBlock x:Name="TemperatureTextBlock"
+                                       FontSize="36"
+                                       FontWeight="Bold">
+
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text"
+                                                Value="{Binding Weather.Current.Temp_C,
+                                                                StringFormat={}{0:0.#} °C,
+                                                                ConverterCulture=pl-PL,
+                                                                TargetNullValue=-- °C}" />
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsLoading}"
+                                                         Value="True">
+                                                <Setter Property="Text"
+                                                        Value="Ładowanie" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <!-- TEMPERATURA ODCZUWALNA -->
+                            <TextBlock x:Name="FeelsLikeTemperatureTextBlock"
+                                       FontSize="14"
+                                       Text="{Binding Weather.Current.Feelslike_C,
+                                                      StringFormat=Odczuwalna: {0:0.#} °C,
+                                                      ConverterCulture=pl-PL,
+                                                      TargetNullValue=Odczuwalna: -- °C}" />
+
+                            <!-- OPIS POGODY -->
+                            <TextBlock x:Name="WeatherDescriptionTextBlock"
+                                       FontSize="16"
+                                       TextWrapping="Wrap">
+
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text"
+                                                Value="{Binding Weather.Current.Condition.Text,
+                                                                TargetNullValue=--}" />
+
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsLoading}"
+                                                         Value="True">
+                                                <Setter Property="Text"
+                                                        Value="Ładowanie" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </Border>
 
                 <!-- PARAMETRY AKTUALNEJ POGODY -->
-                <Grid Grid.Row="1" Margin="0,0,0,15">
+                <Grid Grid.Row="1"
+                      Margin="0,0,0,15">
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                    <!-- WILGOTNOŚĆ -->
+                    <StackPanel Grid.Column="0"
+                                Margin="0,0,8,0">
+
                         <TextBlock Text="Wilgotność"
-                       FontWeight="Bold" />
+                                   FontWeight="Bold" />
 
-                        <TextBlock>
+                        <TextBlock x:Name="HumidityTextBlock">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="{Binding Weather.Current.Humidity, StringFormat={}{0} %, TargetNullValue=-- %}" />
+                                    <Setter Property="Text"
+                                            Value="{Binding Weather.Current.Humidity,
+                                                            StringFormat={}{0} %,
+                                                            TargetNullValue=-- %}" />
+
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
-                                            <Setter Property="Text" Value="Ładowanie" />
+                                        <DataTrigger Binding="{Binding IsLoading}"
+                                                     Value="True">
+                                            <Setter Property="Text"
+                                                    Value="Ładowanie" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -154,17 +240,27 @@
                         </TextBlock>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                    <!-- WIATR -->
+                    <StackPanel Grid.Column="1"
+                                Margin="0,0,8,0">
+
                         <TextBlock Text="Wiatr"
-                       FontWeight="Bold" />
+                                   FontWeight="Bold" />
 
-                        <TextBlock>
+                        <TextBlock x:Name="WindSpeedTextBlock">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="{Binding Weather.Current.Wind_Kph, StringFormat={}{0:0.#} km/h, TargetNullValue=-- km/h}" />
+                                    <Setter Property="Text"
+                                            Value="{Binding Weather.Current.Wind_Kph,
+                                                            StringFormat={}{0:0.#} km/h,
+                                                            ConverterCulture=pl-PL,
+                                                            TargetNullValue=-- km/h}" />
+
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
-                                            <Setter Property="Text" Value="Ładowanie" />
+                                        <DataTrigger Binding="{Binding IsLoading}"
+                                                     Value="True">
+                                            <Setter Property="Text"
+                                                    Value="Ładowanie" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -172,17 +268,26 @@
                         </TextBlock>
                     </StackPanel>
 
+                    <!-- CIŚNIENIE -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Ciśnienie"
-                       FontWeight="Bold" />
 
-                        <TextBlock>
+                        <TextBlock Text="Ciśnienie"
+                                   FontWeight="Bold" />
+
+                        <TextBlock x:Name="PressureTextBlock">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="{Binding Weather.Current.Pressure_Mb, StringFormat={}{0:0.#} hPa, TargetNullValue=-- hPa}" />
+                                    <Setter Property="Text"
+                                            Value="{Binding Weather.Current.Pressure_Mb,
+                                                            StringFormat={}{0:0.#} hPa,
+                                                            ConverterCulture=pl-PL,
+                                                            TargetNullValue=-- hPa}" />
+
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
-                                            <Setter Property="Text" Value="Ładowanie" />
+                                        <DataTrigger Binding="{Binding IsLoading}"
+                                                     Value="True">
+                                            <Setter Property="Text"
+                                                    Value="Ładowanie" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -191,21 +296,21 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- PROGNOZA NA 7 DNI -->
+                <!-- PROGNOZA -->
                 <ListBox x:Name="ForecastListBox"
-             Grid.Row="2"
-             ItemsSource="{Binding Forecast}"
-             BorderThickness="0"
-             Padding="0"
-             ScrollViewer.VerticalScrollBarVisibility="Auto">
+                         Grid.Row="2"
+                         ItemsSource="{Binding Forecast}"
+                         BorderThickness="0"
+                         Padding="0"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Padding="8"
-                        Margin="0,3"
-                        CornerRadius="8"
-                        BorderBrush="#33000000"
-                        BorderThickness="0,0,0,1">
+                                    Margin="0,3"
+                                    CornerRadius="8"
+                                    BorderBrush="#33000000"
+                                    BorderThickness="0,0,0,1">
 
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -215,33 +320,39 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel VerticalAlignment="Center">
+
                                         <TextBlock Text="{Binding DayName}"
-                                       FontWeight="SemiBold" />
+                                                   FontWeight="SemiBold" />
 
                                         <TextBlock Text="{Binding DateText}"
-                                       Opacity="0.7" />
+                                                   Opacity="0.7" />
 
                                         <TextBlock Text="{Binding Condition}"
-                                       TextWrapping="Wrap" />
+                                                   TextWrapping="Wrap" />
                                     </StackPanel>
 
                                     <Image Grid.Column="1"
-                               Width="36"
-                               Height="36"
-                               VerticalAlignment="Center"
-                               Source="{Binding Icon}" />
+                                           Width="36"
+                                           Height="36"
+                                           VerticalAlignment="Center"
+                                           Source="{Binding Icon}" />
 
                                     <StackPanel Grid.Column="2"
-                                    VerticalAlignment="Center"
-                                    Margin="8,0,0,0">
+                                                VerticalAlignment="Center"
+                                                Margin="8,0,0,0">
 
                                         <TextBlock FontWeight="SemiBold">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="{Binding TemperatureText}" />
+                                                    <Setter Property="Text"
+                                                            Value="{Binding TemperatureText}" />
+
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, Path=DataContext.IsLoading}" Value="True">
-                                                            <Setter Property="Text" Value="Ładowanie" />
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}},
+                                                                                       Path=DataContext.IsLoading}"
+                                                                     Value="True">
+                                                            <Setter Property="Text"
+                                                                    Value="Ładowanie" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -251,10 +362,16 @@
                                         <TextBlock FontSize="11">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="{Binding ChanceOfRain, StringFormat={}{0}% opadów}" />
+                                                    <Setter Property="Text"
+                                                            Value="{Binding ChanceOfRain,
+                                                                    StringFormat={}{0}% opadów}" />
+
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, Path=DataContext.IsLoading}" Value="True">
-                                                            <Setter Property="Text" Value="Ładowanie" />
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}},
+                                                                                       Path=DataContext.IsLoading}"
+                                                                     Value="True">
+                                                            <Setter Property="Text"
+                                                                    Value="Ładowanie" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -267,6 +384,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
+                <!-- NAPIS ŁADOWANIE -->
                 <TextBlock Grid.Row="2"
                            Text="Ładowanie"
                            HorizontalAlignment="Center"
@@ -274,26 +392,30 @@
                            FontSize="20"
                            FontWeight="SemiBold"
                            IsHitTestVisible="False">
+
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Visibility"
+                                    Value="Collapsed" />
+
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsLoading}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible" />
+                                <DataTrigger Binding="{Binding IsLoading}"
+                                             Value="True">
+                                    <Setter Property="Visibility"
+                                            Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
 
+                <!-- STATUS -->
                 <TextBlock Grid.Row="3"
                            Text="{Binding LoadStatus}"
                            Margin="0,8,0,0"
                            Opacity="0.7"
                            FontStyle="Italic" />
             </Grid>
-
         </Grid>
     </Grid>
 </ui:FluentWindow>
-
